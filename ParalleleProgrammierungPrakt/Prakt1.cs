@@ -7,17 +7,7 @@ namespace ParalleleProgrammierungPrakt
 {
     class Prakt1
     {
-        static void Main(string[] args)
-        {
-            //aufgabe1();
-
-            //Aufgabe 2
-            //aufgabe2();
-            //aufgabe3();
-            // aufgabe3_optim();
-            //Prakt2.parallelPi_B();
-            Prakt2.parallelPi_A();
-        }
+    
 
         static void aufgabe1()
         {  // Aufgabe 1
