@@ -5,16 +5,18 @@ using System.Windows;
 
 namespace ParalleleProgrammierungPrakt
 {
-    class Program
+    class Prakt1
     {
         static void Main(string[] args)
         {
-            aufgabe1();
+            //aufgabe1();
 
             //Aufgabe 2
-            aufgabe2();
-            aufgabe3();
-            aufgabe3_optim();
+            //aufgabe2();
+            //aufgabe3();
+            // aufgabe3_optim();
+            //Prakt2.parallelPi_B();
+            Prakt2.parallelPi_A();
         }
 
         static void aufgabe1()
@@ -95,7 +97,7 @@ namespace ParalleleProgrammierungPrakt
              * */
         }
 
-        static void aufgabe3()
+        public static void aufgabe3()
         {  // Aufgabe 3
 
             DateTime dt = DateTime.Now;
@@ -136,11 +138,11 @@ namespace ParalleleProgrammierungPrakt
 
             Decimal pi = 0;
 
-            Decimal step = (decimal) 1 / n;
+            Decimal step = (decimal)1 / n;
 
             for (Decimal i = 0; i < 1; i += step)
             {
-                Decimal val = 4 / (1 + ((i + i + step) /2) * ((i + i + step) / 2));
+                Decimal val = 4 / (1 + ((i + i + step) / 2) * ((i + i + step) / 2));
                 pi = pi += (step * val);
             }
 
@@ -148,7 +150,7 @@ namespace ParalleleProgrammierungPrakt
             DateTime end = DateTime.Now;
             Console.WriteLine("Elapsed: " + (end - dt).TotalSeconds + (" s"));
 
-       
+
             // decimal anstatt double fuer genauigkeit
         }
 
