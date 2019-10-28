@@ -5,20 +5,16 @@ using System.Threading;
 
 namespace ParalleleProgrammierungPrakt
 {
-    class Prakt3
+    class Prakt3Priorisiert
     {
-
-        public static void Main()
-        {
-            // dinersProblemNaive();
-            Prakt3Priorisiert.dinersProblemSmart();
-        }
-
         private static int TOTALTHREADS = 2;
 
 
+        //private static int priority 
+        // resource 20 ... prio 20 
+        // resourrce 1... prio 1
 
-        public static void dinersProblemNaive()
+        public static void dinersProblemSmart()
         {
             List<Object> arrayOfObjects = new List<Object>(); // gabeln
 
@@ -54,20 +50,40 @@ namespace ParalleleProgrammierungPrakt
 
             while (1 == 1)
             {
-
-                lock (objs[left])
+                if (left > right)
                 {
-                    Console.WriteLine("began locking left" + numberOfThread);
 
+                    // z b gabel mit kleinerem index zuerst aufnehmen
+                    lock (objs[left])
+                    {
+                        Console.WriteLine("began locking left" + numberOfThread);
+
+                        lock (objs[right])
+                        {
+                            Console.WriteLine("began locking right" + numberOfThread);
+                            Thread.Sleep(1000);
+                            Console.WriteLine("done locking " + numberOfThread);
+                        }
+                    }
+                }
+                if (left < right)
+                {
+                    // z b gabel mit kleinerem index zuerst aufnehmen
                     lock (objs[right])
                     {
-                        Console.WriteLine("began locking right" + numberOfThread);
-                        Thread.Sleep(1000);
-                        Console.WriteLine("done locking " + numberOfThread);
+                        Console.WriteLine("began locking left" + numberOfThread);
+
+                        lock (objs[left])
+                        {
+                            Console.WriteLine("began locking right" + numberOfThread);
+                            Thread.Sleep(1000);
+                            Console.WriteLine("done locking " + numberOfThread);
+                        }
                     }
                 }
             }
         }
     }
 }
+
 
