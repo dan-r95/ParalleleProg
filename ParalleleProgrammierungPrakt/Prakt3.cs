@@ -11,8 +11,10 @@ namespace ParalleleProgrammierungPrakt
         public static void Main()
         {
             // dinersProblemNaive();
-            Prakt2.parallelPi_C();
-            Prakt1.aufgabe3();
+            //Prakt2.parallelPi_C();
+            //Prakt1.aufgabe3();
+            Prakt2.matrixMultParallel();
+            Prakt1.aufgabe2();
         }
 
         private static int TOTALTHREADS = 2;

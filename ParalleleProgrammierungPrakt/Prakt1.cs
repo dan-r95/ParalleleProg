@@ -7,7 +7,7 @@ namespace ParalleleProgrammierungPrakt
 {
     class Prakt1
     {
-    
+
 
         static void aufgabe1()
         {  // Aufgabe 1
@@ -34,7 +34,7 @@ namespace ParalleleProgrammierungPrakt
 
         }
 
-        static void aufgabe2()
+        public static void aufgabe2()
         {  // Aufgabe 1
             DateTime dt = DateTime.Now;
             Console.WriteLine(dt.ToString());
@@ -44,7 +44,7 @@ namespace ParalleleProgrammierungPrakt
             int REIHEN = 400;
             int[,] matrix = new int[REIHEN, SPALTEN];  //zeile, spalte
             int[] vektor = new int[REIHEN];  // spaltenanzahl matrix = anzahl vektorelemente
-            int[] result = new int[SPALTEN];
+            int skalarprodukt = 0;
 
             for (int row = 0; row < REIHEN; row++)
             {
@@ -70,13 +70,10 @@ namespace ParalleleProgrammierungPrakt
                     temp += matrix[j, i] * vektor[i];
 
                 }
-                result[i] = temp;
+                skalarprodukt += temp;
             }
-            Console.WriteLine("Resultat matrixmultiplikation");
-            for (int i = 0; i < result.Length; i++)
-            {
-                Console.WriteLine(result[i]);
-            }
+            Console.WriteLine("Resultat matrixmultiplikation " + skalarprodukt);
+            // System.Console.WriteLine(string.Join(",", result));
 
             DateTime end = DateTime.Now;
             Console.WriteLine("Elapsed: " + (end - dt).TotalSeconds + (" s"));
@@ -95,7 +92,7 @@ namespace ParalleleProgrammierungPrakt
             Console.WriteLine("Hello World!");
             // pi = sum i ... n 
             double n = Math.Pow(10, 7);
-            Console.WriteLine(n);
+            //Console.WriteLine(n);
 
             double pi = 0;
 
@@ -103,6 +100,7 @@ namespace ParalleleProgrammierungPrakt
 
             for (double i = 0; i < 1; i += step)
             {
+                //System.Console.WriteLine("calculated" + i);
                 double val = 4 / (1 + Math.Pow((i + (i + step)) / 2, 2));
                 pi = pi += (step * val);
             }

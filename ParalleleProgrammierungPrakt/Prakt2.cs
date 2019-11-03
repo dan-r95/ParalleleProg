@@ -17,9 +17,6 @@ namespace ParalleleProgrammierungPrakt
             Thread thread2 = new Thread(() => { Console.ReadLine(); thread.Abort(); Console.WriteLine("done"); });
             thread2.Start();
             thread.Start();
-
-            //a 
-            //    
         }
 
         public static void parallelPi_B()
@@ -33,6 +30,59 @@ namespace ParalleleProgrammierungPrakt
 
         public static void matrixMultParallel()
         {
+            DateTime dt = DateTime.Now;
+            Console.WriteLine(dt.ToString());
+            Console.WriteLine("Hello World!");
+
+            int NUM_THREADS = 200;
+
+            int SPALTEN = NUM_THREADS;
+            int REIHEN = NUM_THREADS * 2;
+            int[,] matrix = new int[REIHEN, SPALTEN];  //zeile, spalte
+            int[] vektor = new int[REIHEN];  // spaltenanzahl matrix = anzahl vektorelemente
+            int skalarprodukt = 0;
+            object skalarprodukt_obj = (object)skalarprodukt;
+            for (int row = 0; row < REIHEN; row++)
+            {
+                for (int column = 0; column < SPALTEN; column++)
+                {
+                    matrix[row, column] = 1;
+                }
+            }
+
+            Array.Fill(vektor, 1);
+
+            //Debug.Assert(vektor.Length == matrix.Length);
+
+            Thread[] threads = new Thread[NUM_THREADS];
+
+            for (int i = 0; i < threads.Length; i++)
+            {
+
+                int ii = i;
+                threads[i] = new Thread(() =>
+                {
+                    int temp = 0;
+                    for (int j = 0; j < REIHEN; j++)
+                    {
+                        temp += matrix[j, ii] * vektor[ii];
+
+                    }
+                    lock (skalarprodukt_obj)
+                    {
+                        skalarprodukt += temp;
+                    }
+                });
+
+                threads[i].Start();
+                threads[i].Join();
+            }
+
+
+            Console.WriteLine("Resultat matrixmultiplikation " + skalarprodukt);
+
+            DateTime end = DateTime.Now;
+            Console.WriteLine("Elapsed: " + (end - dt).TotalSeconds + (" s"));
 
         }
 
@@ -40,52 +90,38 @@ namespace ParalleleProgrammierungPrakt
         public static void parallelPi_C()
         {
             DateTime dt = DateTime.Now;
-            object balanceLock = new object();
-            System.Console.WriteLine("hi");
-            double pi = 0;
 
-            int NUM_THREADS = 10;
+            double pi = 0;
+            object pi_obj = (object)pi;
+
+            int NUM_THREADS = 2000;
 
 
 
             Thread[] threads = new Thread[NUM_THREADS];
-            double[] range = Enumerable.Range(0, NUM_THREADS).Select(i => 0 + (1 - 0) * ((double)i / (NUM_THREADS - 1))).ToArray();
+            double[] range = Enumerable.Range(0, NUM_THREADS + 1).Select(i => 0 + (1 - 0) * ((double)i / (NUM_THREADS - 1))).ToArray();
             Console.WriteLine(string.Join(",", range));
-
-            for (int i = 0; i < threads.Length - 1; i++)
+            double step = (double)1 / NUM_THREADS;
+            for (int i = 0; i < threads.Length; i++)
             {
                 int ii = i;
 
                 threads[i] = new Thread(() =>
                 {
-                    // lock (balanceLock)
-                    // {
-                        double leftBorder = range[ii];
-                        double rightBorder = range[ii + 1];
-                        double step = 1 / NUM_THREADS;
 
-                        System.Console.WriteLine("left:" + leftBorder);
-                        System.Console.WriteLine("right: " + rightBorder);
-                        double val = 4 / (1 + Math.Pow((leftBorder + rightBorder) / 2, 2));
-                        
-                        System.Console.WriteLine("val: " + val);
-                        System.Console.WriteLine("step: " + step);
-                        System.Console.WriteLine(pi);
-                        pi = pi +=  val;
-                    //}
+                    double leftBorder = range[ii];
+                    //System.Console.WriteLine("LEFT :::" + leftBorder);
+                    double rightBorder = range[ii + 1];
+
+                    double val = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
+                    lock (pi_obj)
+                    {
+                        double a = (double)1 / NUM_THREADS;
+                        pi = pi += (val * a);
+                    }
                 });
-
-            }
-
-
-            for (int k = 0; k < threads.Length - 1; k++)
-            {
-                threads[k].Start();
-
-            }
-            for (int j = 0; j < threads.Length - 1; j++)
-            {
-                threads[j].Join();
+                threads[i].Start();
+                threads[i].Join();
             }
 
             System.Console.WriteLine("Pi gesamt: " + pi);
@@ -107,12 +143,7 @@ namespace ParalleleProgrammierungPrakt
 
             // for all i    thread[i]. join
 
-
-
         }
-
-
-
     }
 
 }
