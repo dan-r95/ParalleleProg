@@ -89,35 +89,44 @@ namespace ParalleleProgrammierungPrakt
 
         public static void parallelPi_C()
         {
+            Console.WriteLine("Paralleles pi");
             DateTime dt = DateTime.Now;
 
             double pi = 0;
             object pi_obj = (object)pi;
 
-            int NUM_THREADS = 2000;
+            int NUM_THREADS = 4;
 
-
+            int n = 1000000;
 
             Thread[] threads = new Thread[NUM_THREADS];
-            double[] range = Enumerable.Range(0, NUM_THREADS + 1).Select(i => 0 + (1 - 0) * ((double)i / (NUM_THREADS - 1))).ToArray();
-            Console.WriteLine(string.Join(",", range));
-            double step = (double)1 / NUM_THREADS;
-            for (int i = 0; i < threads.Length; i++)
+            double[] range = Enumerable.Range(0, n).Select(i => 0 + (1 - 0) * ((double)i / (n))).ToArray();
+            int[] countRange = Enumerable.Range(0, NUM_THREADS+1).Select(i =>  (int) (n * i) / NUM_THREADS   ).ToArray();
+
+             Console.WriteLine(string.Join(",", countRange));
+            double step = (double)1 / n;
+            for (int i = 0; i < threads.Length-1; i++)
             {
                 int ii = i;
 
                 threads[i] = new Thread(() =>
                 {
-
-                    double leftBorder = range[ii];
-                    //System.Console.WriteLine("LEFT :::" + leftBorder);
-                    double rightBorder = range[ii + 1];
-
-                    double val = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
-                    lock (pi_obj)
+                    for (int j = countRange[ii]; j < countRange[ii+1]; j++)
                     {
-                        double a = (double)1 / NUM_THREADS;
-                        pi = pi += (val * a);
+                        double leftBorder = range[j];
+                        double rightBorder;
+                        //System.Console.WriteLine("LEFT :::" + leftBorder);
+
+                        rightBorder = range[j + 1];
+
+
+                       // Console.WriteLine("left " + leftBorder + "right " + rightBorder);
+                        double val = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
+                        //Console.WriteLine(val);
+                        lock (pi_obj)
+                        {
+                            pi = pi += (val * step);
+                        }
                     }
                 });
                 threads[i].Start();

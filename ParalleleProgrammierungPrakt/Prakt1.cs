@@ -89,9 +89,10 @@ namespace ParalleleProgrammierungPrakt
 
             DateTime dt = DateTime.Now;
             Console.WriteLine(dt.ToString());
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Pi seriell!");
             // pi = sum i ... n 
-            double n = Math.Pow(10, 7);
+            //double n = Math.Pow(10, 2);
+            double n = 4;
             //Console.WriteLine(n);
 
             double pi = 0;
@@ -102,6 +103,7 @@ namespace ParalleleProgrammierungPrakt
             {
                 //System.Console.WriteLine("calculated" + i);
                 double val = 4 / (1 + Math.Pow((i + (i + step)) / 2, 2));
+                Console.WriteLine(val);
                 pi = pi += (step * val);
             }
 
