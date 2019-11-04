@@ -9,16 +9,6 @@ namespace ParalleleProgrammierungPrakt
 {
     class Prakt4
     {
-      
-
-
-        static void  calculateLocalSum(double leftBorder, double rightBorder)
-        {
-           
-
-         
-        }
-
         public static void parallelPi_Tasks()
         {
 
@@ -31,37 +21,51 @@ namespace ParalleleProgrammierungPrakt
 
             double pi = 0;
             object pi_obj = (object)pi;
-           
-            int NUM_THREADS = 4;
+
+            int NUM_TASKS = 16;
+            int n = 100000000; //10e8
+
+            Task.Factory.StartNew(() =>
+                 {
+                     int x = Console.Read();
+                     cts.Cancel();
+                     System.Console.WriteLine("Pi gesamt: " + pi);
+                 }, token);
 
 
-            double[] range = Enumerable.Range(0, NUM_THREADS ).Select(i => 0 + (1 - 0) * ((double)i / (NUM_THREADS ))).ToArray();
 
+            double[] range = Enumerable.Range(0, n + 1).Select(i => 0 + (1 - 0) * ((double)i / (n))).ToArray();
+            int[] countRange = Enumerable.Range(0, NUM_TASKS + 1).Select(i => (int)(n * i) / NUM_TASKS).ToArray();
+            double step = (double)1 / n;
             // millionen mal durchlaufen lassen mit großem n, daher parallelisieren
-            for (int i = 0; i < NUM_THREADS; i++)
+            for (int i = 0; i < NUM_TASKS; i++)
             {
                 int ii = i;
-                double leftBorder = range[ii];
-                double rightBorder;
-                //System.Console.WriteLine("LEFT :::" + leftBorder);
 
-                rightBorder = range[ii + 1];
                 tasks.Add(
                    Task.Factory.StartNew(() =>
                    {
-                       double val = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
-                       Console.WriteLine(val);
-                      
-                       lock (pi_obj)
+                       for (int j = countRange[ii]; j < countRange[ii + 1]; j++)
                        {
-                           double a = (double)1 / NUM_THREADS;
-                           pi = pi += (val * a);
-                       }
-                       if (token.IsCancellationRequested)
-                           token.ThrowIfCancellationRequested();
+                           double leftBorder = range[j];
 
+                           double rightBorder = range[j + 1];
+
+                           double val = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
+
+                           lock (pi_obj)
+                           {
+                               pi = pi += (val * step);
+                           }
+
+                           if (token.IsCancellationRequested)
+                               token.ThrowIfCancellationRequested();
+                       }
                    }, token));
             }
+
+
+
 
             try
             {
@@ -84,52 +88,77 @@ namespace ParalleleProgrammierungPrakt
 
         }
 
-        /*
-       
-            Console.WriteLine(string.Join(",", range));
-            double step = (double)1 / NUM_THREADS;
-            for (int i = 0; i < threads.Length; i++)
+
+
+
+        public static void Pi_ParallelFor()
+        {
+
+            Console.WriteLine("Parallel Pi For");
+            DateTime dt = DateTime.Now;
+
+            CancellationTokenSource cts = new CancellationTokenSource();
+            CancellationToken token = cts.Token;
+            var tasks = new List<Task>();
+
+            double pi = 0;
+            object pi_obj = (object)pi;
+
+            int NUM_TASKS = 16;
+            int n = 1000000000; //10e8
+            bool cancellationFlag = false;
+            ParallelOptions po = new ParallelOptions { CancellationToken = cts.Token };
+
+            Task.Factory.StartNew(() =>
+                 {
+                     while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                     {
+                         {
+                             // do something
+                         }
+                         cancellationFlag = true;
+                         cts.Cancel();
+                     }
+                 }, token);
+
+
+            double[] range = Enumerable.Range(0, n + 1).Select(i => 0 + (1 - 0) * ((double)i / (n))).ToArray();
+            int[] countRange = Enumerable.Range(0, NUM_TASKS + 1).Select(i => (int)(n * i) / NUM_TASKS).ToArray();
+            double step = (double)1 / n;
+            // millionen mal durchlaufen lassen mit großem n, daher parallelisieren
+
+            try
             {
-                int ii = i;
-
-                threads[i] = new Thread(() =>
-                {
-
-                    double leftBorder = range[ii];
-                    //System.Console.WriteLine("LEFT :::" + leftBorder);
-                    double rightBorder = range[ii + 1];
-
-                    double val = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
-                    lock (pi_obj)
+                Parallel.For<int>(0, n, () => { return 0; },
+                    (i, pls, x) =>
                     {
-                        double a = (double)1 / NUM_THREADS;
-                        pi = pi += (val * a);
+                        po.CancellationToken.ThrowIfCancellationRequested();
+
+                    //     x = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
+                    x += (int)i % 2;
+                        return x;
+                    },
+                    z =>
+                    {
+                        lock (pi_obj) pi = (pi + z) % 42;
                     }
-                });
-                threads[i].Start();
-                threads[i].Join();
+                    );
+
             }
-
-            System.Console.WriteLine("Pi gesamt: " + pi);
-
-            DateTime end = DateTime.Now;
-            Console.WriteLine("Elapsed: " + (end - dt).TotalSeconds + (" s"));
-
-            // pi = 0
-
-            //for j = linke grenze bis rechte grenze 
-            // lokale summe aufsummiert
-
-
-            //  lock
-            //     pi =  pi + lokalesumme
-
-            //Thread[i]  start
-
-
-            // for all i    thread[i]. join
-
+            catch (OperationCanceledException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                cts.Dispose();
+            }
         }
-    }*/
+
+
+
+
+
+
     }
 }

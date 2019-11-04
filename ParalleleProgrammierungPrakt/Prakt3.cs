@@ -8,17 +8,7 @@ namespace ParalleleProgrammierungPrakt
     class Prakt3
     {
 
-        public static void Main()
-        {
-            Prakt1.aufgabe3();
-            // dinersProblemNaive();
-            Prakt2.parallelPi_C();
-        
-            //Prakt2.matrixMultParallel();
-           
-            //Prakt4.parallelPi_Tasks();
-        }
-
+     
         private static int TOTALTHREADS = 2;
 
 
