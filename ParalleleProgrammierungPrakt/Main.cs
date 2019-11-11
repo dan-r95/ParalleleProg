@@ -13,9 +13,9 @@ namespace ParalleleProgrammierungPrakt
             //Prakt2.matrixMultParallel();
 
             //Prakt4.ParallelPi_Tasks();
-            //Prakt4.Pi_ParallelFor();
+            Prakt4.Pi_ParallelFor();
 
-            Prakt5.combineTasks();
+           // Prakt5.combineTasks();
         }
     }
 

@@ -93,7 +93,7 @@ namespace ParalleleProgrammierungPrakt
 
 
 
-        public static void Pi_ParallelFor()
+        public static double Pi_ParallelFor()
         {
 
             Console.WriteLine("Parallel Pi For");
@@ -107,11 +107,11 @@ namespace ParalleleProgrammierungPrakt
             object pi_obj = (object)pi;
 
             int NUM_TASKS = 16;
-            int n = 1000000000; //10e8
+            int n = 1000000; //10e6
             bool cancellationFlag = false;
             ParallelOptions po = new ParallelOptions { CancellationToken = cts.Token };
 
-            Task.Factory.StartNew(() =>
+            /*Task.Factory.StartNew(() =>
                  {
                      while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
                      {
@@ -122,34 +122,48 @@ namespace ParalleleProgrammierungPrakt
                          cts.Cancel();
                      }
                  }, token);
-
+            */
 
             double[] range = Enumerable.Range(0, n + 1).Select(i => 0 + (1 - 0) * ((double)i / (n))).ToArray();
-            int[] countRange = Enumerable.Range(0, NUM_TASKS + 1).Select(i => (int)(n * i) / NUM_TASKS).ToArray();
+            int[] countRange = Enumerable.Range(0, n + 1).Select(i => (int)(n * i) / NUM_TASKS).ToArray();
             double step = (double)1 / n;
             // millionen mal durchlaufen lassen mit großem n, daher parallelisieren
 
             try
             {
-                Parallel.For<int>(0, n, () => { return 0; },
-                    (i, pls, x) =>
+                Parallel.For(0, n, (i) =>
                     {
-                        po.CancellationToken.ThrowIfCancellationRequested();
-
-                    //     x = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
-                    x += (int)i % 2;
-                        return x;
-                    },
-                    z =>
-                    {
-                        lock (pi_obj) pi = (pi + z) % 42;
+                        //pls.CancellationToken.ThrowIfCancellationRequested();
+                        double val = 4 / (1 + Math.Pow((range[i] + (range[i] + step)) / 2, 2));
+                        double x = val * step;
+                        //     x = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
+                        lock (pi_obj) pi = (pi + x);
                     }
+                   
                     );
+                // hier fehlt noch sämtliche parallelität
+                /*
+                Parallel.For<int>(10, 100, () => { return 0; },
+                (i, pls, x) => {
+                    x += (int)i % 2;
+                    return x;
+                },
+                z => {
+                    lock (myLock) result = (result + z) % 42;
+                }
+                );*/
 
+
+                System.Console.WriteLine("Pi gesamt: " + pi);
+
+                DateTime end = DateTime.Now;
+                Console.WriteLine("Elapsed: " + (end - dt).TotalSeconds + (" s"));
+                return pi;
             }
             catch (OperationCanceledException e)
             {
                 Console.WriteLine(e.Message);
+                return 0;
             }
             finally
             {
