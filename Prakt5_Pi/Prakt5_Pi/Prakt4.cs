@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ParalleleProgrammierungPrakt
+namespace Prakt5_Pi
 {
     class Prakt4
     {
@@ -25,13 +25,13 @@ namespace ParalleleProgrammierungPrakt
             int NUM_TASKS = 16;
             int n = 100000000; //10e8
 
-            Task.Factory.StartNew(() =>
+            /*Task.Factory.StartNew(() =>
                  {
                      int x = Console.Read();
                      cts.Cancel();
                      System.Console.WriteLine("Pi gesamt: " + pi);
                  }, token);
-
+            */
 
 
             double[] range = Enumerable.Range(0, n + 1).Select(i => 0 + (1 - 0) * ((double)i / (n))).ToArray();
