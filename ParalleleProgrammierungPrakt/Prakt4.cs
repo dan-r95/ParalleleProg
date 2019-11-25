@@ -131,15 +131,21 @@ namespace ParalleleProgrammierungPrakt
 
             try
             {
-                Parallel.For(0, n, (i) =>
-                    {
-                        //pls.CancellationToken.ThrowIfCancellationRequested();
-                        double val = 4 / (1 + Math.Pow((range[i] + (range[i] + step)) / 2, 2));
-                        double x = val * step;
-                        //     x = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
-                        lock (pi_obj) pi = (pi + x);
-                    }
-                   
+                Parallel.For(0, n, () => { return 0; },
+                (i, pls, x) =>
+                {
+
+                    //pls.CancellationToken.ThrowIfCancellationRequested();
+                    double val = 4 / (1 + Math.Pow((range[i] + (range[i] + step)) / 2, 2));
+                    double x = val * step;
+                    //     x = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
+
+                    return x;
+                }, z =>
+                {
+                    lock (pi_obj) pi = (pi + z);
+                }
+
                     );
                 // hier fehlt noch sämtliche parallelität
                 /*
