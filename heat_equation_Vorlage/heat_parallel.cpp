@@ -16,6 +16,7 @@ using namespace std;
 int main(int argc, char* argv[])
 {
 	int N = 200;
+	int timesteps = 10000;  //10k == 10sec
 
 	// Matrizen anlegen
 	Array2D u(N + 1, N + 1);
@@ -64,10 +65,11 @@ int main(int argc, char* argv[])
 	double deltaT = 0.001;  //0.001 sec
 
 	// zeititeration können wir nicht parallelisieren, weil abhängig vom vorherigen zeitschritt
-	for (int k = 0; k < 100000; k++) // time step iterations  100000
+	for (int k = 0; k < timesteps; k++) // time step iterations  100000
 	{
 		// einfacher die äußere schleife parallelsieren
-		#pragma omp parallel for collapse(2)
+//#pragma omp parallel for collapse(2)
+		#pragma omp parallel for schedule(static)  //auto
 		for (int i = 1; i < N; i++)   // wegen randbedingungen, die nicht mit einbezogen werden sollen   x -achse
 			for (int j = 1; j < N; j++)  // y- achse
 			{
@@ -89,10 +91,11 @@ int main(int argc, char* argv[])
 		// Ausgabe in jedem 100-ten Zeitschritt
 		if (k % 100 == 0) {
 			// Ausgabe von Zeitschritt und Laufzeit
-			printf("k = %i,  CPU time (clock)                = %d ms\n", k, duration_cast<milliseconds>(high_resolution_clock::now() - t1).count());
+			
 
 			// Ausgabe der Temperatur in der Mitte der Platte
-			printf("Temperatur in der Mitte: %1.1f ", u(N / 2, N / 2));
+			//printf("Temperatur in der Mitte: %1.1f ", u(N / 2, N / 2));
+			printf("k= %d  CPU time (clock)                = %d ms\n",k,  duration_cast<milliseconds>(high_resolution_clock::now() - t1).count());
 
 			// Ausgabe der Lösung auf dem Bildschirm (nur für N<20 sinnvoll)
 			/*for (int i = 0; i < N + 1; i++) {
@@ -107,6 +110,7 @@ int main(int argc, char* argv[])
 			writer.finalize();
 		}
 	}
+	printf("  CPU time (clock)                = %d ms\n", duration_cast<milliseconds>(high_resolution_clock::now() - t1).count());
 }
 
 

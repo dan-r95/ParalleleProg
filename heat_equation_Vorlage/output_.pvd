@@ -19,47 +19,5 @@
              file="output_700.vts"/>
     <DataSet timestep="800" group="" part="0"
              file="output_800.vts"/>
-    <DataSet timestep="900" group="" part="0"
-             file="output_900.vts"/>
-    <DataSet timestep="1000" group="" part="0"
-             file="output_1000.vts"/>
-    <DataSet timestep="1100" group="" part="0"
-             file="output_1100.vts"/>
-    <DataSet timestep="1200" group="" part="0"
-             file="output_1200.vts"/>
-    <DataSet timestep="1300" group="" part="0"
-             file="output_1300.vts"/>
-    <DataSet timestep="1400" group="" part="0"
-             file="output_1400.vts"/>
-    <DataSet timestep="1500" group="" part="0"
-             file="output_1500.vts"/>
-    <DataSet timestep="1600" group="" part="0"
-             file="output_1600.vts"/>
-    <DataSet timestep="1700" group="" part="0"
-             file="output_1700.vts"/>
-    <DataSet timestep="1800" group="" part="0"
-             file="output_1800.vts"/>
-    <DataSet timestep="1900" group="" part="0"
-             file="output_1900.vts"/>
-    <DataSet timestep="2000" group="" part="0"
-             file="output_2000.vts"/>
-    <DataSet timestep="2100" group="" part="0"
-             file="output_2100.vts"/>
-    <DataSet timestep="2200" group="" part="0"
-             file="output_2200.vts"/>
-    <DataSet timestep="2300" group="" part="0"
-             file="output_2300.vts"/>
-    <DataSet timestep="2400" group="" part="0"
-             file="output_2400.vts"/>
-    <DataSet timestep="2500" group="" part="0"
-             file="output_2500.vts"/>
-    <DataSet timestep="2600" group="" part="0"
-             file="output_2600.vts"/>
-    <DataSet timestep="2700" group="" part="0"
-             file="output_2700.vts"/>
-    <DataSet timestep="2800" group="" part="0"
-             file="output_2800.vts"/>
-    <DataSet timestep="2900" group="" part="0"
-             file="output_2900.vts"/>
   </Collection>
 </VTKFile>
