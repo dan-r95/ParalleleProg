@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
 
 	random_device rd;
 	mt19937 gen(rd());
+	//ohne neue randbedingung
 	uniform_real_distribution<> dis(-0.1, 0.1);
 
 	for (int i = 0; i < N + 1; i++) {
