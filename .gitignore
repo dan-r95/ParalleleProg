@@ -619,3 +619,6 @@ $RECYCLE.BIN/
 _NCrunch*
 
 *.vts
+
+
+*.pvts
