@@ -9,12 +9,11 @@
 
 int main(int argc, char* argv[])
 {
-
 	// Initialize the MPI environment
 	MPI_Init(&argc, &argv);
 
-	int block_dims_i = 2;    // TODO: set the dimensions of the MPI topologie, e.g. 2x2
-	int block_dims_j = 2;
+	int block_dims_i = 4;    // TODO: set the dimensions of the MPI topologie, e.g. 2x2
+	int block_dims_j = 4;
 
 	// TODO: Set up virtual topologie...
 	int ndims = 2;
@@ -38,17 +37,14 @@ int main(int argc, char* argv[])
 	int neighbour_N, neighbour_S, neighbour_W, neighbour_O;
 	MPI_Cart_shift(comm_cart, 0, 1,    // direction 0 -> X
 		&neighbour_W, &neighbour_O);
-	MPI_Cart_shift(comm_cart, 1, 1,    // direction 0 -> Y
+	MPI_Cart_shift(comm_cart, 1, 1,    // direction 0 -> Y		//swap bottom with top 
 		&neighbour_N, &neighbour_S);
 
 	printf("I'm %i and my coordinates are (%i, %i), my neighbours: %i, %i, %i, %i (left, right, top, bottom)\n",
 		cart_rank, block_i, block_j, neighbour_W, neighbour_O, neighbour_N, neighbour_S);
 
-
 	// Simulation parameters
-	const int N = 100;
-	// TODO: Define the parameters...
-
+	const int N = 50;
 
 	// random number generator, seed based on Cartesian rank of MPI process
 	std::mt19937 rng(cart_rank);
@@ -83,28 +79,23 @@ int main(int argc, char* argv[])
 	for (int i = 0; i < u.get_isize(); i++) {
 		//TODO: Set boundary conditions...
 		if (neighbour_S == MPI_PROC_NULL) {   // unten  
-			u_old(i, N) = u(i, N) = 1;
+			u_old(i, N) = u(i, N) = -1;
 		}
 		if (neighbour_N == MPI_PROC_NULL) {   // oben  
-			u_old(i, 0) = u(i, 0) = 1;
+			u_old(i, 0) = u(i, 0) = -1;
 		}
 	}
 
-
-	// TODO: Do we need to exchange the halo rings already?
-
 	// define halo ring arrays, this means 4 arrays for 4 directions - receiving and sending
 
-	double send_N[N] , send_W[N], send_O[N] , send_S[N]; // init with zero
-	double recv_N[N], recv_W[N], recv_O[N], recv_S[N]; // init with zero
-
-	std::cout << send_N[99] << std::endl;
+	double send_N[N + 1] = {}, send_W[N + 1] = {}, send_O[N + 1] = {}, send_S[N + 1] = {}; // init with zero
+	double recv_N[N + 1] = {}, recv_W[N + 1] = {}, recv_O[N + 1] = {}, recv_S[N + 1] = {}; // init with zero
 
 	// MPI proc null wenn kein nachbar
 
 	double start_time = MPI_Wtime();
 
-	for (int k = 0; k < 1000; k++) // time step iterations
+	for (int k = 0; k < 30000; k++) // time step iterations
 	{
 		for (int i = 1; i < u.get_isize() - 1; i++) {
 			for (int j = 1; j < u.get_jsize() - 1; j++) {
@@ -116,12 +107,11 @@ int main(int argc, char* argv[])
 		// fill halos for sending
 		for (int j = 0; j < u.get_jsize(); j++) {
 
-			send_W[j] = u(0, j);
-			send_N[j] = u(j, 0);
-			send_O[j] = u(N, j);
-			send_S[j] = u(j, N);
+			send_W[j] = u(1, j);
+			send_N[j] = u(j, 1);
+			send_O[j] = u(N - 1, j);
+			send_S[j] = u(j, N - 1);
 		}
-
 
 		std::swap(u, u_old);
 
@@ -152,15 +142,23 @@ int main(int argc, char* argv[])
 				neighbour_N, 1, comm_cart, MPI_STATUSES_IGNORE);
 		}
 
-
 		// fill u with received halos
 		for (int j = 0; j < u.get_jsize(); j++) {
-			u_old(j, 0) = recv_N[j];
-			u_old(0, j) = recv_W[j];
-			u_old(N, j) = recv_O[j];
-			u_old(j, N) = recv_S[j];
+			if (neighbour_N != MPI_PROC_NULL) {   // oben  
+				u_old(j, 0) = recv_N[j];
+			}
+			if (neighbour_W != MPI_PROC_NULL) {
+				u_old(0, j) = recv_W[j];
+			}
+			if (neighbour_O != MPI_PROC_NULL) {
+				u_old(N, j) = recv_O[j];
+			}
+			if (neighbour_S != MPI_PROC_NULL) {
+				u_old(j, N) = recv_S[j];
+			}
 		}
 
+	
 
 		// Writing result
 		if (k % 100 == 0) {
@@ -174,7 +172,6 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
-
 
 	if (cart_rank == 0) printf("Total Time passed %e \n", MPI_Wtime() - start_time);
 
