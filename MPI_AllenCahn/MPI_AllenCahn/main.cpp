@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 
 	// random number generator, seed based on Cartesian rank of MPI process
 	std::mt19937 rng(cart_rank);
-	std::uniform_real_distribution<double> dis(-0.1, 0.1);
+	std::uniform_real_distribution<double> dis(0, 0.2);   // neue startbedingungen mit abziehen des phasen durchschnitts 
 
 	// Defining the domains (which know the MPI coordinates)
 	Domain2D u(N + 1, N + 1, block_i, block_j);
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	// Boundary Conditions
 	// ränder - 0 oder 1
 	for (int j = 0; j < u.get_jsize(); j++) {
-		//TODO: Set boundary conditions...
+		//east and west equals 1
 		if (neighbour_W == MPI_PROC_NULL) {    // links
 			u_old(0, j) = u(0, j) = 1;
 		}
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	for (int i = 0; i < u.get_isize(); i++) {
-		//TODO: Set boundary conditions...
+		// south and north equals -1 
 		if (neighbour_S == MPI_PROC_NULL) {   // unten  
 			u_old(i, N) = u(i, N) = -1;
 		}
@@ -95,14 +95,35 @@ int main(int argc, char* argv[])
 
 	double start_time = MPI_Wtime();
 
-	for (int k = 0; k < 30000; k++) // time step iterations
+	for (int k = 0; k < 3000; k++) // time step iterations
 	{
+		double sendSum;
 		for (int i = 1; i < u.get_isize() - 1; i++) {
 			for (int j = 1; j < u.get_jsize() - 1; j++) {
-				// TODO: Make a time step by updating u from u_old
+
+				//Make a time step by updating u from u_old
 				u(i, j) = (u_old(i + 1, j) + u_old(i - 1, j) + u_old(i, j + 1) + u_old(i, j - 1) - 4 * u_old(i, j)) * 0.08 + 0.02 * sin(u_old(i, j) * 3.14) + u_old(i, j);
+				sendSum += u(i, j);
+				/**
+				um sicherzustellen, dass
+				beide Phasen immer genau zu gleichen Anteilen vorhanden sind, soll ein
+				Korrekturverfahren implementiert werden
+				**/
+
 			}
 		}
+		double recvSum;
+		MPI_Allreduce(&sendSum, &recvSum, 1, MPI_DOUBLE, MPI_SUM, comm_cart);
+		double average = (double)recvSum / (double)(N * N * block_dims_i * block_dims_j);
+		for (int i = 1; i < u.get_isize() - 1; i++) {
+			for (int j = 1; j < u.get_jsize() - 1; j++) {
+				// subtract the avg
+				u(i, j) = u(i, j) - average;
+			}
+		}
+
+		sendSum = 0;
+
 
 		// fill halos for sending
 		for (int j = 0; j < u.get_jsize(); j++) {
@@ -142,7 +163,7 @@ int main(int argc, char* argv[])
 				neighbour_N, 1, comm_cart, MPI_STATUSES_IGNORE);
 		}
 
-		// fill u with received halos
+		// fill u with received halos when there is a neighbour! otherwise not
 		for (int j = 0; j < u.get_jsize(); j++) {
 			if (neighbour_N != MPI_PROC_NULL) {   // oben  
 				u_old(j, 0) = recv_N[j];
@@ -158,7 +179,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-	
+
 
 		// Writing result
 		if (k % 100 == 0) {
