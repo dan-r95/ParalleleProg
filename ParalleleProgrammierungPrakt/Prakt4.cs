@@ -137,7 +137,7 @@ namespace ParalleleProgrammierungPrakt
 
                     //pls.CancellationToken.ThrowIfCancellationRequested();
                     double val = 4 / (1 + Math.Pow((range[i] + (range[i] + step)) / 2, 2));
-                    double x = val * step;
+                    x = (int) (val * step);
                     //     x = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
 
                     return x;

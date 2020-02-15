@@ -12,11 +12,10 @@
 using namespace std::chrono;
 using namespace std;
 
-
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	int N = 200;
-	int timesteps = 10000;  //10k == 10sec
+	int timesteps = 10000; //10k == 10sec
 
 	// Matrizen anlegen
 	Array2D u(N + 1, N + 1);
@@ -29,59 +28,63 @@ int main(int argc, char* argv[])
 
 	/// Anfangswert setzen
 	for (int i = 0; i < N + 1; i++)
-		for (int j = 0; j < N + 1; j++) {
+		for (int j = 0; j < N + 1; j++)
+		{
 			// e.g. u(i, j) = 20;
 			u(i, j) = u_old(i, j) = 20;
 		}
 
 	// Randbedingung setzen
-	// linker rand auf 90 grad erwärmt
-	for (int i = 0; i < N + 1; i++) {
-		u(0, i) = u_old(0, i) = 90;   // linker rand mit 90 grad initialisieren
+	// linker rand auf 90 grad erwï¿½rmt
+	for (int i = 0; i < N + 1; i++)
+	{
+		u(0, i) = u_old(0, i) = 90; // linker rand mit 90 grad initialisieren
 	}
 
 	/*
-	Der Autohersteller fügt eine Wärmequelle in der Mitte der Platte hinzu.
-		Die Stärke der Wärmequelle ist q = 4° / sec, die Wärmequelle wirkt nur in
-		einem 10cm x 10cm großen Stück in der Mitte der Platte.Wie sieht die
-		Wärmeverteilung jetzt aus ?*/
-	for (int i = 0; i < N + 1; i++) {   // wegen randbedingungen, die nicht mit einbezogen werden sollen   x -achse
-		for (int j = 0; j < N + 1; j++)  // y- achse
+	Der Autohersteller fï¿½gt eine Wï¿½rmequelle in der Mitte der Platte hinzu.
+		Die Stï¿½rke der Wï¿½rmequelle ist q = 4ï¿½ / sec, die Wï¿½rmequelle wirkt nur in
+		einem 10cm x 10cm groï¿½en Stï¿½ck in der Mitte der Platte.Wie sieht die
+		Wï¿½rmeverteilung jetzt aus ?*/
+	for (int i = 0; i < N + 1; i++)
+	{									// wegen randbedingungen, die nicht mit einbezogen werden sollen   x -achse
+		for (int j = 0; j < N + 1; j++) // y- achse
 		{
 			q(i, j) = 0;
-			if (N * 0.25 < i < N * 0.75 && N * 0.25 < j < N * 0.75) {
+			if (N * 0.25 < i < N * 0.75 && N * 0.25 < j < N * 0.75)
+			{
 				q(i, j) = 4;
 			}
-
 		}
 	}
 
-
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
-	double leitfähigkeit = 98.8e-6; // wärmeleitfähigkeit
-	double deltaX = 0.001;  //0.001 m
-	double deltaY = 0.001;  //0.001 m
-	double deltaT = 0.001;  //0.001 sec
+	double leitfaehigkeit = 98.8e-6; // wï¿½rmeleitfï¿½higkeit
+	double deltaX = 0.001;			 //0.001 m
+	double deltaY = 0.001;			 //0.001 m
+	double deltaT = 0.001;			 //0.001 sec
 
-	// zeititeration können wir nicht parallelisieren, weil abhängig vom vorherigen zeitschritt
+	// zeititeration kï¿½nnen wir nicht parallelisieren, weil abhï¿½ngig vom vorherigen zeitschritt
 	for (int k = 0; k < timesteps; k++) // time step iterations  100000
 	{
-		// einfacher die äußere schleife parallelsieren
-//#pragma omp parallel for collapse(2)
-		#pragma omp parallel for schedule(static)  //auto
-		for (int i = 1; i < N; i++)   // wegen randbedingungen, die nicht mit einbezogen werden sollen   x -achse
-			for (int j = 1; j < N; j++)  // y- achse
+		// einfacher die ï¿½uï¿½ere schleife parallelsieren
+		//#pragma omp parallel for collapse(2)
+#pragma omp parallel for schedule(static) //auto
+		for (int i = 1; i < N; i++)		  // wegen randbedingungen, die nicht mit einbezogen werden sollen   x -achse
+			for (int j = 1; j < N; j++)   // y- achse
 			{
 				/// Iterationsvorschrift zur Berechnung von u zur neuen Zeit
 				// delta x2 = 1/ N ^2
 
-				if (N * 0.25 < i < N * 0.75 && N * 0.25 < j < N * 0.75) {
-					// konstante wärme in der mitte 
-					u(i, j) = ((leitfähigkeit * (u_old(i + 1, j) - 2 * u_old(i, j) + u_old(i - 1, j) + u_old(i, j + 1) - 2 * u_old(i, j) + u_old(i, j - 1))) / (deltaX * deltaX)) * deltaT + u_old(i, j) + q(i, j) * deltaT;
+				if (N * 0.25 < i < N * 0.75 && N * 0.25 < j < N * 0.75)
+				{
+					// konstante wï¿½rme in der mitte
+					u(i, j) = ((leitfaehigkeit * (u_old(i + 1, j) - 2 * u_old(i, j) + u_old(i - 1, j) + u_old(i, j + 1) - 2 * u_old(i, j) + u_old(i, j - 1))) / (deltaX * deltaX)) * deltaT + u_old(i, j) + q(i, j) * deltaT;
 				}
-				else {
-					u(i, j) = ((leitfähigkeit * (u_old(i + 1, j) - 2 * u_old(i, j) + u_old(i - 1, j) + u_old(i, j + 1) - 2 * u_old(i, j) + u_old(i, j - 1))) / (deltaX * deltaX)) * deltaT + u_old(i, j);
+				else
+				{
+					u(i, j) = ((leitfaehigkeit * (u_old(i + 1, j) - 2 * u_old(i, j) + u_old(i - 1, j) + u_old(i, j + 1) - 2 * u_old(i, j) + u_old(i, j - 1))) / (deltaX * deltaX)) * deltaT + u_old(i, j);
 				}
 			}
 
@@ -89,15 +92,15 @@ int main(int argc, char* argv[])
 		swap(u, u_old);
 
 		// Ausgabe in jedem 100-ten Zeitschritt
-		if (k % 100 == 0) {
+		if (k % 100 == 0)
+		{
 			// Ausgabe von Zeitschritt und Laufzeit
-			
 
 			// Ausgabe der Temperatur in der Mitte der Platte
 			//printf("Temperatur in der Mitte: %1.1f ", u(N / 2, N / 2));
-			printf("k= %d  CPU time (clock)                = %d ms\n",k,  duration_cast<milliseconds>(high_resolution_clock::now() - t1).count());
+			printf("k= %d  CPU time (clock)                = %d ms\n", k, duration_cast<milliseconds>(high_resolution_clock::now() - t1).count());
 
-			// Ausgabe der Lösung auf dem Bildschirm (nur für N<20 sinnvoll)
+			// Ausgabe der Lï¿½sung auf dem Bildschirm (nur fï¿½r N<20 sinnvoll)
 			/*for (int i = 0; i < N + 1; i++) {
 			for (int j = 0; j < N + 1; j++) {
 			printf("%1.1f ", u_old(i, j));
@@ -112,5 +115,3 @@ int main(int argc, char* argv[])
 	}
 	printf("  CPU time (clock)                = %d ms\n", duration_cast<milliseconds>(high_resolution_clock::now() - t1).count());
 }
-
-
