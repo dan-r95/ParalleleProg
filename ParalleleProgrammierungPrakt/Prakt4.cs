@@ -131,17 +131,22 @@ namespace ParalleleProgrammierungPrakt
 
             try
             {
-                Parallel.For(0, n, () => { return 0; },
-                (i, pls, x) =>
-                {
-
+                Parallel.For(0, n, () => 
+                 // Initialize the local states
+                { return 0; },
+                // Accumulate the thread-local computations in the loop body
+                (i, loop, localState) =>
+                {   
+                    //localState: int
                     //pls.CancellationToken.ThrowIfCancellationRequested();
                     double val = 4 / (1 + Math.Pow((range[i] + (range[i] + step)) / 2, 2));
-                    x = (int) (val * step);
+                    localState = (int) (val * step);
                     //     x = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
 
-                    return x;
-                }, z =>
+                    return localState;
+                },
+                 // Combine all local states
+                z =>
                 {
                     lock (pi_obj) pi = (pi + z);
                 }

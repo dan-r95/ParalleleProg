@@ -14,6 +14,8 @@ namespace ParalleleProgrammierungPrakt
 
             //Prakt4.ParallelPi_Tasks();
             Prakt4.Pi_ParallelFor();
+            ForEachWithThreadLocal.Run();
+            RandomBreak.Run();
 
            // Prakt5.combineTasks();
         }
