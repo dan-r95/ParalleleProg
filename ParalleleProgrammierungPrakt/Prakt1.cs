@@ -92,7 +92,7 @@ namespace ParalleleProgrammierungPrakt
             Console.WriteLine("Pi seriell!");
             // pi = sum i ... n 
             //double n = Math.Pow(10, 2);
-            double n = 4;
+            double n = 1000000;
             //Console.WriteLine(n);
 
             double pi = 0;
@@ -103,7 +103,7 @@ namespace ParalleleProgrammierungPrakt
             {
                 //System.Console.WriteLine("calculated" + i);
                 double val = 4 / (1 + Math.Pow((i + (i + step)) / 2, 2));
-                Console.WriteLine(val);
+                //Console.WriteLine(val);
                 pi = pi += (step * val);
             }
 
@@ -136,7 +136,7 @@ namespace ParalleleProgrammierungPrakt
                 pi = pi += (step * val);
             }
 
-            Console.WriteLine("pi: " + pi);
+            Console.WriteLine("pi decimal optim: " + pi);
             DateTime end = DateTime.Now;
             Console.WriteLine("Elapsed: " + (end - dt).TotalSeconds + (" s"));
 

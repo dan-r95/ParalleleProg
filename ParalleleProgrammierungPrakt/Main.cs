@@ -12,7 +12,8 @@ namespace ParalleleProgrammierungPrakt
 
             //Prakt2.matrixMultParallel();
 
-            //Prakt4.ParallelPi_Tasks();
+            Prakt4.ParallelPi_Tasks();
+            Prakt4.Pi_ParallelFor();
             StreamData.Run();
 
             //Prakt4.Pi_ParallelFor();

@@ -23,13 +23,13 @@ namespace ParalleleProgrammierungPrakt
             object pi_obj = (object)pi;
 
             int NUM_TASKS = 16;
-            int n = 100000000; //10e8
+            int n = 1000000; //10e8
 
             Task.Factory.StartNew(() =>
                  {
                      int x = Console.Read();
                      cts.Cancel();
-                     System.Console.WriteLine("Pi gesamt: " + pi);
+                     System.Console.WriteLine("Pi gesamt: tasks " + pi);
                  }, token);
 
 
@@ -71,7 +71,7 @@ namespace ParalleleProgrammierungPrakt
             {
                 Task.WaitAll(tasks.ToArray());
 
-                System.Console.WriteLine("Pi gesamt: " + pi);
+                System.Console.WriteLine("Pi gesamt tasks: " + pi);
 
                 DateTime end = DateTime.Now;
                 Console.WriteLine("Elapsed: " + (end - dt).TotalSeconds + (" s"));
@@ -93,7 +93,7 @@ namespace ParalleleProgrammierungPrakt
 
 
 
-        public static double Pi_ParallelFor()
+        public static Decimal Pi_ParallelFor()
         {
 
             Console.WriteLine("Parallel Pi For");
@@ -103,10 +103,10 @@ namespace ParalleleProgrammierungPrakt
             CancellationToken token = cts.Token;
             var tasks = new List<Task>();
 
-            double pi = 0;
+            decimal pi = 0;
             object pi_obj = (object)pi;
 
-            int NUM_TASKS = 16;
+            int NUM_THREADS = 16;
             int n = 1000000; //10e6
             bool cancellationFlag = false;
             ParallelOptions po = new ParallelOptions { CancellationToken = cts.Token };
@@ -125,39 +125,33 @@ namespace ParalleleProgrammierungPrakt
             */
 
             double[] range = Enumerable.Range(0, n + 1).Select(i => 0 + (1 - 0) * ((double)i / (n))).ToArray();
-            int[] countRange = Enumerable.Range(0, n + 1).Select(i => (int)(n * i) / NUM_TASKS).ToArray();
+            int[] countRange = Enumerable.Range(0, n + 1).Select(i => (int)(n * i) / NUM_THREADS).ToArray();
             double step = (double)1 / n;
             // millionen mal durchlaufen lassen mit großem n, daher parallelisieren
 
             try
             {
-                Parallel.For(0, n, () => 
-                 // Initialize the local states
-                { return 0; },
-                // Accumulate the thread-local computations in the loop body
-                (i, loop, localState) =>
-                {   
-                    //localState: int
-                    //pls.CancellationToken.ThrowIfCancellationRequested();
-                    double val = 4 / (1 + Math.Pow((range[i] + (range[i] + step)) / 2, 2));
-                    localState = (int) (val * step);
-                    //     x = 4 / (1 + ((leftBorder + rightBorder) / 2) * ((leftBorder + rightBorder) / 2));
 
-                    return localState;
-                },
-                 // Combine all local states
-                z =>
-                {
-                    lock (pi_obj) pi = (pi + z);
-                }
+                var l = new Object();
+                decimal x = 0;
+                decimal y = 0;
+                Parallel.For(0, n, i =>
+                          {
+                              x = (i - (decimal)0.5) / n;
+                              y = (4 / (1 + x * x));
+                              lock (l)
+                              {
+                                  pi = pi + y;
+                              }
+                          });
+                pi = pi / n;
 
-                    );
                 // hier fehlt noch sämtliche parallelität
                 /*
                 Parallel.For<int>(10, 100, () => { return 0; },
-                (i, pls, x) => {
-                    x += (int)i % 2;
-                    return x;
+                (i, loop, localState) => {
+                    localState += (int)i % 2;
+                    return localState;
                 },
                 z => {
                     lock (myLock) result = (result + z) % 42;
@@ -165,7 +159,7 @@ namespace ParalleleProgrammierungPrakt
                 );*/
 
 
-                System.Console.WriteLine("Pi gesamt: " + pi);
+                System.Console.WriteLine("Pi parallelfor: " + pi);
 
                 DateTime end = DateTime.Now;
                 Console.WriteLine("Elapsed: " + (end - dt).TotalSeconds + (" s"));
