@@ -4,24 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace ParalleleProgrammierungPrakt
 {
     class ThreadLocalForWithOptions
     {
         // The number of parallel iterations to perform.
         const int N = 1000000;
-
         static public void Run()
         {
             // The result of all thread-local computations.
             int result = 0;
-
             // This example limits the degree of parallelism to four.
             // You might limit the degree of parallelism when your algorithm
             // does not scale beyond a certain number of cores or when you 
             // enforce a particular quality of service in your application.
-
             Parallel.For(0, N, new ParallelOptions { MaxDegreeOfParallelism = 4 },
                // Initialize the local states
                () => 0,
@@ -33,11 +29,9 @@ namespace ParalleleProgrammierungPrakt
                // Combine all local states
                localState => Interlocked.Add(ref result, localState)
             );
-
             // Print the actual and expected results.
             Console.WriteLine("Actual result: {0}. Expected 1000000.", result);
         }
-
         // Simulates a lengthy operation.
         private static int Compute(int n)
         {

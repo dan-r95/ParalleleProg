@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace ParalleleProgrammierungPrakt
 {
     public class RandomBreak
@@ -11,10 +10,8 @@ namespace ParalleleProgrammierungPrakt
             var rnd = new Random();
             int breakIndex = rnd.Next(1, 11);
             Nullable<long> lowest = new Nullable<long>();
-
             Console.WriteLine("Will call Break at iteration {0}\n",
                               breakIndex);
-
             var result = Parallel.For(1, 101, (i, state) =>
             {
                 Console.WriteLine("Beginning iteration {0}", i);
@@ -23,13 +20,11 @@ namespace ParalleleProgrammierungPrakt
                 delay = rnd.Next(1, 1001);
                 Monitor.Exit(rnd);
                 Thread.Sleep(delay);
-
                 if (state.ShouldExitCurrentIteration)
                 {
                     if (state.LowestBreakIteration < i)
                         return;
                 }
-
                 if (i == breakIndex)
                 {
                     Console.WriteLine("Break in iteration {0}", i);
@@ -40,7 +35,6 @@ namespace ParalleleProgrammierungPrakt
                         else
                             lowest = state.LowestBreakIteration;
                 }
-
                 Console.WriteLine("Completed iteration {0}", i);
             });
             if (lowest.HasValue)

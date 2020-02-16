@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
-
 namespace ParalleleProgrammierungPrakt
 {
     class AsyncAwait
@@ -15,12 +14,10 @@ namespace ParalleleProgrammierungPrakt
                 decimal pow;
                 decimal x = 0;
                 int count = 0;
-
                 for (decimal i = 0; i < n; i++)
                 {
                     x = (i - (decimal)0.5) / n;
                     pi = pi + (4 / (1 + x * x));
-
                     if (i % (n / 100) == 0)
                     {
                         Console.WriteLine(count + " " + n + " " + (i % (n / 100) == 0));
@@ -36,10 +33,8 @@ namespace ParalleleProgrammierungPrakt
             decimal pi = await t;
             sw.Stop();
             Console.WriteLine("PI: " + pi);
-
             return new Tuple<decimal, long>(pi, sw.ElapsedMilliseconds);
         }
-
         static async Task<Tuple<decimal, long>> readPiAsync()
         {
             string url = "https://www.angio.net/pi/digits/50.txt";
@@ -51,19 +46,15 @@ namespace ParalleleProgrammierungPrakt
             sw.Stop();
             return new Tuple<decimal, long>(pi, sw.ElapsedMilliseconds);
         }
-
-
         public static void Run()
         {
             Console.WriteLine("Hello World!");
             Task<Tuple<decimal, long>> t = calcPiAsync(1000);
             Console.WriteLine("Result-pi: " + t.Result.Item1 + " in" + t.Result.Item2 + " ms.");
-
             Task<Tuple<decimal, long>> t1 = readPiAsync();
             decimal pi = t1.Result.Item1;
             long time = t1.Result.Item2;
             Console.WriteLine("Downloaded pi: " + pi + "in " + time + "ms.");
-
             Console.WriteLine("difference abs(t1-t2): " + Math.Abs(t.Result.Item1 - t1.Result.Item1));
         }
     }

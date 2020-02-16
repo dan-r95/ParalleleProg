@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace ParalleleProgrammierungPrakt
 {
     class ForEachWithThreadLocal
@@ -25,7 +24,6 @@ namespace ParalleleProgrammierungPrakt
             // The sum of these elements is 40.
             int[] input = { 4, 1, 6, 2, 9, 5, 10, 3 };
             int sum = 0;
-
             try
             {
                 Parallel.ForEach(
@@ -39,7 +37,6 @@ namespace ParalleleProgrammierungPrakt
                         },
                         (localSum) => Interlocked.Add(ref sum, localSum)                    // thread local aggregator
                     );
-
                 Console.WriteLine("\nSum={0}", sum);
             }
             // No exception is expected in this example, but if one is still thrown from a task,
@@ -50,5 +47,4 @@ namespace ParalleleProgrammierungPrakt
             }
         }
     }
-
 }
