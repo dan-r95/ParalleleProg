@@ -23,6 +23,7 @@ namespace ParalleleProgrammierungPrakt
             Object obj = new Object();
 
             ParallelLoopResult result = Parallel.ForEach(text,
+                                                        //for each character
                                                          (ch) =>
                                                          {
                                                              Char uCh = Char.ToUpper(ch);
