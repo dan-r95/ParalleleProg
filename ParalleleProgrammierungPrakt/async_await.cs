@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ParalleleProgrammierungPrakt
 {
-    class Program
+    class AsyncAwait
     {
         static async Task<Tuple<decimal, long>> calcPiAsync(int n)
         {
@@ -53,7 +53,7 @@ namespace ParalleleProgrammierungPrakt
         }
 
 
-        static void Main(string[] args)
+        public static void Run()
         {
             Console.WriteLine("Hello World!");
             Task<Tuple<decimal, long>> t = calcPiAsync(1000);

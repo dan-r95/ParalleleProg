@@ -15,12 +15,13 @@ namespace ParalleleProgrammierungPrakt
             //Prakt4.ParallelPi_Tasks();
             StreamData.Run();
 
-            Prakt4.Pi_ParallelFor();
+            //Prakt4.Pi_ParallelFor();
             ForEachWithThreadLocal.Run();
             RandomBreak.Run();
-            
+            Summary.Run();
+            AsyncAwait.Run();
 
-           // Prakt5.combineTasks();
+            Prakt5.combineTasks();
         }
     }
 

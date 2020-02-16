@@ -8,7 +8,7 @@ namespace ParalleleProgrammierungPrakt
 {
     class Summary
     {
-        static async Task Run(string[] args)
+        public static void Run()
         {
             Console.WriteLine("Hello World!");
             //aufgabe1();
@@ -26,7 +26,7 @@ namespace ParalleleProgrammierungPrakt
             Console.WriteLine("Hallo");
         }
 
-        private static Task simpleAsyncAwaitAsync()
+        private static async void simpleAsyncAwaitAsync()
         {
             string result = await WaitSynchronously();
             string result2 = await WaitAsynchronouslyAsync();
